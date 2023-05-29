@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Text text="Welcome"
+      GridPane.columnIndex="0" GridPane.rowIndex="0"
+      GridPane.columnSpan="2"/>
