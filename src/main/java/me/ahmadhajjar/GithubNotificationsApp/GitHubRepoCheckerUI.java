@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class GitHubRepoCheckerUI {
 
-    private static final String LAST_ORG_FILE = "last_org.txt";
+    private static final String LAST_ORG_FILE = "last_org.data.txt";
 
     private final GitHubAPIService gitHubAPIService;
     private final NotificationService notificationService;

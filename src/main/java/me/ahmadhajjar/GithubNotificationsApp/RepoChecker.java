@@ -19,14 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RepoChecker {
 
-    private static final String NOTIFIED_REPOS_FILE = "notified_repos.txt";
+    private static final String NOTIFIED_REPOS_FILE = "notified_repos.data.txt";
     private final GitHubAPIService gitHubAPIService;
     private final NotificationService notificationService;
     private final String orgName;
