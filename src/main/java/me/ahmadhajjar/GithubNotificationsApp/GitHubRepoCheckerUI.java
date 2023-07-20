@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public class GitHubRepoCheckerUI {
 
@@ -17,6 +18,7 @@ public class GitHubRepoCheckerUI {
     private final GitHubAPIService gitHubAPIService;
     private final NotificationService notificationService;
     private JTextField orgNameField;
+    private JList<JTextField> textFieldJList;
 
     public GitHubRepoCheckerUI(GitHubAPIService gitHubAPIService, NotificationService notificationService) {
         this.gitHubAPIService = gitHubAPIService;
@@ -25,32 +27,36 @@ public class GitHubRepoCheckerUI {
 
     public void createAndShowGUI() {
         // Create and set up the window.
-        JFrame frame = new JFrame("GitHub Repo Checker");
+        JFrame frame = new GithubNotifierApp("GitHub Repo Checker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
+      //  frame.setSize(300, 200);
+        frame.setLocationRelativeTo(null);
+
+        // Set the window icon
+        ImageIcon appIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon.png")));
+        frame.setIconImage(appIcon.getImage());
+
 
         // Add a text field
         orgNameField = new JTextField(20);
-        frame.getContentPane().add(orgNameField, BorderLayout.NORTH);
+      //  frame.getContentPane().add(orgNameField, BorderLayout.NORTH);
 
         // Load the last used organization name
         loadLastOrgName();
 
         // Add a button
         JButton button = new JButton("Check Repos");
-        frame.getContentPane().add(button, BorderLayout.SOUTH);
+      //  frame.getContentPane().add(button, BorderLayout.SOUTH);
 
         // Add an action listener to the button
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String orgName = orgNameField.getText();
-                RepoChecker checker = new RepoChecker(gitHubAPIService, notificationService, orgName);
-                try {
-                    checker.checkReposForOpenPullRequests();
-                    saveLastOrgName(orgName);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        button.addActionListener(actionEvent -> {
+            String orgName = orgNameField.getText();
+            RepoChecker checker = new RepoChecker(gitHubAPIService, notificationService, orgName);
+            try {
+                checker.checkReposForOpenPullRequests();
+                saveLastOrgName(orgName);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         });
 

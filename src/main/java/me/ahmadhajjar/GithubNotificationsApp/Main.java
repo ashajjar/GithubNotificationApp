@@ -10,7 +10,7 @@ public class Main {
         GitHubAPIService gitHubAPIService = new GitHubAPIService(GITHUB_TOKEN);
         NotificationService notificationService = new NotificationService();
 
-        GitHubRepoCheckerUI gitHubRepoCheckerUI = new GitHubRepoCheckerUI(gitHubAPIService, notificationService);
-        SwingUtilities.invokeLater(gitHubRepoCheckerUI::createAndShowGUI);
+        new GithubNotifierApp("GitHub Repo Checker");
+//        SwingUtilities.invokeLater(gitHubRepoCheckerUI::createAndShowGUI);
     }
 }

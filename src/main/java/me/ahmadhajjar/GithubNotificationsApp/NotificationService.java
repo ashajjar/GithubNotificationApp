@@ -7,7 +7,7 @@ public class NotificationService {
     public void sendNotification(String repoName, int newPRNumber) throws Exception {
         if (SystemTray.isSupported()) {
             SystemTray tray = SystemTray.getSystemTray();
-            Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
+            Image image = Toolkit.getDefaultToolkit().createImage(getClass().getResource("/icon.png"));
             TrayIcon trayIcon = new TrayIcon(image, "GitHub PR Notifier");
             trayIcon.setImageAutoSize(true);
             trayIcon.setToolTip("There are open pull requests in " + repoName);
