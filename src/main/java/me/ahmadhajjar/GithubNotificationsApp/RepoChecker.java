@@ -15,6 +15,7 @@ package me.ahmadhajjar.GithubNotificationsApp;
 //        }
 //    }
 
+import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

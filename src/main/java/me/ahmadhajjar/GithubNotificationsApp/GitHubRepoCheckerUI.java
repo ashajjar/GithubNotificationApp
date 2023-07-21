@@ -1,9 +1,10 @@
 package me.ahmadhajjar.GithubNotificationsApp;
 
+import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
+import me.ahmadhajjar.GithubNotificationsApp.ui.GithubNotifierApp;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,9 +28,9 @@ public class GitHubRepoCheckerUI {
 
     public void createAndShowGUI() {
         // Create and set up the window.
-        JFrame frame = new GithubNotifierApp("GitHub Repo Checker");
+        JFrame frame = new GithubNotifierApp();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      //  frame.setSize(300, 200);
+        frame.setSize(300, 200);
         frame.setLocationRelativeTo(null);
 
         // Set the window icon
@@ -39,14 +40,14 @@ public class GitHubRepoCheckerUI {
 
         // Add a text field
         orgNameField = new JTextField(20);
-      //  frame.getContentPane().add(orgNameField, BorderLayout.NORTH);
+        frame.getContentPane().add(orgNameField, BorderLayout.NORTH);
 
         // Load the last used organization name
         loadLastOrgName();
 
         // Add a button
         JButton button = new JButton("Check Repos");
-      //  frame.getContentPane().add(button, BorderLayout.SOUTH);
+       frame.getContentPane().add(button, BorderLayout.SOUTH);
 
         // Add an action listener to the button
         button.addActionListener(actionEvent -> {

@@ -1,6 +1,7 @@
 package me.ahmadhajjar.GithubNotificationsApp;
 
-import javax.swing.*;
+import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
+import me.ahmadhajjar.GithubNotificationsApp.ui.GithubNotifierApp;
 
 public class Main {
 
@@ -10,7 +11,7 @@ public class Main {
         GitHubAPIService gitHubAPIService = new GitHubAPIService(GITHUB_TOKEN);
         NotificationService notificationService = new NotificationService();
 
-        new GithubNotifierApp("GitHub Repo Checker");
+        new GithubNotifierApp();
 //        SwingUtilities.invokeLater(gitHubRepoCheckerUI::createAndShowGUI);
     }
 }

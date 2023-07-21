@@ -1,11 +1,11 @@
-package me.ahmadhajjar.GithubNotificationsApp;
+package me.ahmadhajjar.GithubNotificationsApp.service;
 
 import com.mashape.unirest.http.Headers;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,9 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class GitHubAPIService {
 
