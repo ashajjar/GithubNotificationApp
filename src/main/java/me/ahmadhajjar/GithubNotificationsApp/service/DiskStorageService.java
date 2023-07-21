@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DiskStorageService implements StorageService {
-    private static final String WATCHED_REPOS_FILE = "watched_repos.json";
-    private static final String WATCHED_REPOS_KNOWN_PRS_FILE = "watched_repos_known_prs.json";
+    private static final String WATCHED_REPOS_FILE = "watched_repos.data.json";
+    private static final String WATCHED_REPOS_KNOWN_PRS_FILE = "watched_repos_known_prs.data.json";
     private static final DiskStorageService instance = new DiskStorageService();
 
     private DiskStorageService() {
