@@ -2,7 +2,6 @@ package me.ahmadhajjar.GithubNotificationsApp.ui;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
