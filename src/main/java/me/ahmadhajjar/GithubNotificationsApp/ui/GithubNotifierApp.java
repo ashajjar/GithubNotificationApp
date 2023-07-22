@@ -4,11 +4,10 @@ import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.AddRepoButtonListener;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.HelpButtonListener;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.RemoveRepoButtonListener;
+import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.WatchedReposListFocusListener;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.*;
 
 public class GithubNotifierApp extends JFrame {
@@ -50,6 +49,11 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void initialiseWatchedReposList() {
+        populateWatchedReposList();
+        watchedReposList.addFocusListener(new WatchedReposListFocusListener());
+    }
+
+    private void populateWatchedReposList() {
         DefaultListModel<String> model = new DefaultListModel<>();
 
         DiskStorageService.getInstance().loadReposList().forEach(model::addElement);
