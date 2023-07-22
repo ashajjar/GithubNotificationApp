@@ -2,11 +2,15 @@ package me.ahmadhajjar.GithubNotificationsApp.ui;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 public class TrayAdapter {
     private final Boolean traySupported = SystemTray.isSupported();
     private TrayIcon trayIcon;
 
+    private ActionListener actionListener;
     private final PopupMenu popup = new PopupMenu();
     private static final TrayAdapter instance = new TrayAdapter();
 
@@ -50,6 +54,16 @@ public class TrayAdapter {
             System.err.println("System tray not supported!");
             return;
         }
-        trayIcon.displayMessage("Open Pull Requests", "Repository " + repoName + " has new open PR with number: " + newPRNumber, TrayIcon.MessageType.INFO);
+        trayIcon.displayMessage("New Pull Request", "Repository " + repoName + " has a new open PR : #" + newPRNumber + "\n Click Here to open!", TrayIcon.MessageType.INFO);
+
+        trayIcon.removeActionListener(actionListener);
+        actionListener = e -> {
+            try {
+                Desktop.getDesktop().browse(URI.create("https://github.com/" + repoName + "/pull/" + newPRNumber));
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage());
+            }
+        };
+        trayIcon.addActionListener(actionListener);
     }
 }
