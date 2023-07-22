@@ -40,3 +40,4 @@ build/
 
 ### APP Files ###
 *.data.txt
+*.data.json
