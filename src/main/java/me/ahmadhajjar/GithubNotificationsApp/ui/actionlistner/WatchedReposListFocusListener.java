@@ -8,8 +8,7 @@ public class WatchedReposListFocusListener implements FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {
-        @SuppressWarnings("unchecked")
-        JList<String> watchedReposList = (JList<String>) e.getComponent();
+        JList<?> watchedReposList = (JList<?>) e.getComponent();
         if (watchedReposList.getSelectedIndex() == -1) {
             watchedReposList.setSelectedIndex(watchedReposList.getModel().getSize() - 1);
         }
