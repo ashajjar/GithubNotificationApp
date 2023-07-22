@@ -17,6 +17,7 @@ public class RemoveRepoButtonListener implements ActionListener {
         DefaultListModel<String> model = new DefaultListModel<>();
 
         if (watchedReposList.getSelectedIndex() == -1) {
+            System.out.println("No repo was selected!");
             return;
         }
 

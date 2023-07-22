@@ -22,10 +22,12 @@ public class AddRepoButtonListener implements ActionListener {
         String newRepoNameValue = newRepoName.getText().trim();
 
         if (newRepoNameValue.isEmpty()) {
+            System.out.println("Repo name is empty!");
             return;
         }
 
         if (!newRepoNameValue.toLowerCase().matches("^[a-z\\d](?:[a-z\\d]|-(?=[a-z\\d])){0,38}/[a-z\\d](?:[a-z\\d]|-(?=[a-z\\d])){0,38}$")) {
+            System.out.println("Repo name is invalid!");
             showValidationError(e);
             return;
         }
@@ -35,6 +37,7 @@ public class AddRepoButtonListener implements ActionListener {
         Stream<String> currentRepos = getCurrentReposAsStream(currentModel);
 
         if (currentRepos.anyMatch(s -> s.equalsIgnoreCase(newRepoNameValue))) {
+            System.out.println("Repo name exists!");
             return;
         }
 

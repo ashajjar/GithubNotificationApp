@@ -26,7 +26,8 @@ public class DiskStorageService implements StorageService {
 
     @Override
     public List<String> loadReposList() {
-        List<String> result = null;
+        System.out.println("Loading repos from disk ...");
+        List<String> result = new ArrayList<>();
         File file = new File(WATCHED_REPOS_FILE);
         if (file.exists()) {
             try {
@@ -35,6 +36,8 @@ public class DiskStorageService implements StorageService {
 
                 result = reposJsonArray.toList().stream().map(Object::toString).toList();
             } catch (IOException e) {
+                System.err.println("Error happened during loading the repos from disk ...");
+                System.err.println(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -43,22 +46,25 @@ public class DiskStorageService implements StorageService {
 
     @Override
     public void saveReposList(List<String> repos) {
+        System.out.println("Saving the repos to disk ...");
         try (FileWriter writer = new FileWriter(WATCHED_REPOS_FILE)) {
             writer.write(JSONWriter.valueToString(repos));
         } catch (IOException e) {
+            System.err.println("Error happened during saving the repos to disk ...");
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
 
     @Override
     public Map<String, List<Integer>> loadReposPRList() {
+        System.out.println("Loading Pull Requests from disk ...");
         Map<String, List<Integer>> result = new HashMap<>();
         File file = new File(WATCHED_REPOS_KNOWN_PRS_FILE);
         if (file.exists()) {
             try {
                 String reposJson = Files.readString(Paths.get(WATCHED_REPOS_KNOWN_PRS_FILE));
                 JSONObject jsonObject = new JSONObject(reposJson);
-
 
                 Map<String, Object> map = jsonObject.toMap();
 
@@ -72,6 +78,8 @@ public class DiskStorageService implements StorageService {
                     result.put(key, ints);
                 }
             } catch (IOException e) {
+                System.err.println("Error happened during loading the pull requests from disk ...");
+                System.err.println(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -80,9 +88,12 @@ public class DiskStorageService implements StorageService {
 
     @Override
     public void saveReposPRList(Map<String, List<Integer>> reposPrs) {
+        System.out.println("Saving the pull requests to disk ...");
         try (FileWriter writer = new FileWriter(WATCHED_REPOS_KNOWN_PRS_FILE)) {
             writer.write(JSONWriter.valueToString(reposPrs));
         } catch (IOException e) {
+            System.err.println("Error happened during saving the pull requests to disk ...");
+            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }

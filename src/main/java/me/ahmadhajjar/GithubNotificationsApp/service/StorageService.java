@@ -3,7 +3,7 @@ package me.ahmadhajjar.GithubNotificationsApp.service;
 import java.util.List;
 import java.util.Map;
 
-interface StorageService {
+public interface StorageService {
     List<String> loadReposList();
 
     void saveReposList(List<String> repos);

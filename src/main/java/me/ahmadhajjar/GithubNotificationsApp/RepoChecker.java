@@ -1,111 +1,78 @@
 package me.ahmadhajjar.GithubNotificationsApp;
 
-//    public void checkReposForOpenPullRequests() throws Exception {
-//        JSONArray repos = gitHubAPIService.getRepos(orgName);
-//
-//        for (int i = 0; i < repos.length(); i++) {
-//            JSONObject repo = repos.getJSONObject(i);
-//            String repoName = repo.getString("name");
-//
-//            JSONArray pullRequests = gitHubAPIService.getPullRequestsForRepo(orgName, repoName);
-//
-//            if (pullRequests.length() > 0) {
-//                notificationService.sendNotification(repoName);
-//            }
-//        }
-//    }
-
+import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
+import me.ahmadhajjar.GithubNotificationsApp.ui.TrayAdapter;
+import me.ahmadhajjar.GithubNotificationsApp.service.StorageService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.*;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class RepoChecker {
-
-    private static final String NOTIFIED_REPOS_FILE = "notified_repos.data.txt";
+public class RepoChecker extends Thread {
+    public static final long ONE_MINUTE = 60 * 1000;
     private final GitHubAPIService gitHubAPIService;
-    private final NotificationService notificationService;
-    private final String orgName;
-    private final Map<String, JSONArray> lastRepoPRCount;
+    private final TrayAdapter trayAdapter;
+    private final StorageService storageService;
+    Map<String, List<Integer>> reposPRMap;
 
-    public RepoChecker(GitHubAPIService gitHubAPIService, NotificationService notificationService, String orgName) {
+    public RepoChecker(GitHubAPIService gitHubAPIService, TrayAdapter trayAdapter) {
         this.gitHubAPIService = gitHubAPIService;
-        this.notificationService = notificationService;
-        this.orgName = orgName;
-        this.lastRepoPRCount = new HashMap<>();
+        this.trayAdapter = trayAdapter;
+        this.storageService = DiskStorageService.getInstance();
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                checkReposForOpenPullRequests();
+                Thread.sleep(ONE_MINUTE);
+            }
+        } catch (Throwable e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void checkReposForOpenPullRequests() throws Exception {
-        loadLastRepoPRCount();
-        int pagesCount = (gitHubAPIService.getReposCount(orgName) / GitHubAPIService.ITEMS_PER_PAGE) + 1;
+        reposPRMap = storageService.loadReposPRList();
 
-        for (int page = 0; page < pagesCount; page++) {
-            JSONArray repos = gitHubAPIService.getReposPage(orgName, GitHubAPIService.ITEMS_PER_PAGE, page);
-            for (int i = 0; i < repos.length(); i++) {
-                JSONObject repo = repos.getJSONObject(i);
-                String repoName = repo.getString("name");
+        List<String> repos = storageService.loadReposList();
+        for (String repoName : repos) {
+            JSONArray pullRequests = gitHubAPIService.getLatestPullRequestsForRepo(repoName);
 
-                JSONArray pullRequests = gitHubAPIService.getPullRequestsForRepo(orgName, repoName);
-
-                if (!lastRepoPRCount.containsKey(repoName)) {
-                    // Store the pull request numbers
-                    JSONArray prNumbers = new JSONArray();
-                    for (int j = 0; j < pullRequests.length(); j++) {
-                        JSONObject pr = pullRequests.getJSONObject(j);
-                        int prNumber = pr.getInt("number");
-                        prNumbers.put(prNumber);
-                    }
-                    lastRepoPRCount.put(repoName, prNumbers);
-                    continue; // Skip notification for the first check
-                }
-
-                JSONArray lastPRNumbers = lastRepoPRCount.get(repoName);
-                JSONArray newPRNumbers = new JSONArray();
-
+            if (!reposPRMap.containsKey(repoName)) {
+                // Store the pull request numbers
+                List<Integer> prNumbers = new ArrayList<>();
                 for (int j = 0; j < pullRequests.length(); j++) {
                     JSONObject pr = pullRequests.getJSONObject(j);
                     int prNumber = pr.getInt("number");
-                    newPRNumbers.put(prNumber);
-
-                    // Check if the pull request number is new
-                    if (!lastPRNumbers.toList().contains(prNumber)) {
-                        // notificationService.sendNotification(repoName, prNumber);
-                    }
+                    prNumbers.add(prNumber);
                 }
-
-                // Update the last recorded pull request numbers
-                lastRepoPRCount.put(repoName, newPRNumbers);
+                reposPRMap.put(repoName, prNumbers);
+                continue; // Skip notification for the first check
             }
-            saveLastRepoPRCount();
-        }
-    }
 
+            List<Integer> lastPRNumbers = reposPRMap.get(repoName);
+            List<Integer> newPRNumbers = new ArrayList<>();
 
-    private void loadLastRepoPRCount() {
-        File file = new File(NOTIFIED_REPOS_FILE);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(" ");
-                    lastRepoPRCount.put(parts[0], new JSONArray(parts[1]));
+            for (int j = 0; j < pullRequests.length(); j++) {
+                JSONObject pr = pullRequests.getJSONObject(j);
+                int prNumber = pr.getInt("number");
+                newPRNumbers.add(prNumber);
+
+                // Check if the pull request number is new
+                if (!lastPRNumbers.contains(prNumber)) {
+                    trayAdapter.sendNotification(repoName, prNumber);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+            // Update the last recorded pull request numbers
+            reposPRMap.put(repoName, newPRNumbers);
         }
+        storageService.saveReposPRList(reposPRMap);
     }
 
-    private void saveLastRepoPRCount() {
-        try (FileWriter writer = new FileWriter(NOTIFIED_REPOS_FILE)) {
-            for (Map.Entry<String, JSONArray> entry : lastRepoPRCount.entrySet()) {
-                writer.write(entry.getKey() + " " + entry.getValue() + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
