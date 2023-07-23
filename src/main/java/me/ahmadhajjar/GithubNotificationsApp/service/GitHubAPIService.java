@@ -5,6 +5,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -15,6 +17,7 @@ import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public class GitHubAPIService {
+    private static final Logger logger = LogManager.getLogger(GitHubAPIService.class);
 
     private static final String GITHUB_API_BASE_URL = "https://api.github.com";
     private static final String REPOS_ENDPOINT = "/repos";
@@ -93,14 +96,14 @@ public class GitHubAPIService {
      * @throws UnirestException In case of an HTTP Error
      */
     public JSONArray getLatestPullRequestsForRepo(String reposFullName) throws UnirestException {
-        System.out.println("Getting pull requests for repo " + reposFullName);
+        logger.debug("Getting pull requests for repo " + reposFullName);
         HttpResponse<String> prResponse = Unirest.get(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT)
                 .header("Authorization", "token " + token)
                 .asString();
 
         if (prResponse.getStatus() != HttpStatus.SC_OK) {
-            System.err.println("Error while getting pull requests for repo " + reposFullName);
-            System.err.println("API returned non OK status : " + prResponse.getStatus());
+            logger.error("Error while getting pull requests for repo " + reposFullName);
+            logger.error("API returned non OK status : " + prResponse.getStatus());
             return null;
         }
 
