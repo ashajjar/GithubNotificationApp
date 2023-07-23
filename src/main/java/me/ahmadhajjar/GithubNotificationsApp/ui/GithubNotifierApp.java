@@ -56,7 +56,7 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void initialiseTrayPopupMenu() {
-        TrayAdapter.getInstance().addPopupMenuItem("Reload", e -> JOptionPane.showMessageDialog(null, "UI Says Hi"));
+        TrayAdapter.getInstance().addPopupMenuItem("Reload", e -> logger.warn("Tray reload is not implemented yet"));
         TrayAdapter.getInstance().addPopupMenuItem("Exit", e -> exitApplication(this));
     }
 
