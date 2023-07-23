@@ -101,7 +101,7 @@ public class GitHubAPIService {
         if (prResponse.getStatus() != HttpStatus.SC_OK) {
             System.err.println("Error while getting pull requests for repo " + reposFullName);
             System.err.println("API returned non OK status : " + prResponse.getStatus());
-            return new JSONArray();
+            return null;
         }
 
         return new JSONArray(prResponse.getBody());
