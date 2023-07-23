@@ -1,15 +1,17 @@
 package me.ahmadhajjar.GithubNotificationsApp.service;
 
-import com.mashape.unirest.http.Headers;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,8 @@ public class GitHubAPIService {
     public static final int ITEMS_PER_PAGE = 10;
     private final Supplier<IllegalStateException> illegalStateExceptionSupplier = () -> new IllegalStateException("Could not get pull requests count!");
     private final String token;
+
+    private final HttpClient client = HttpClient.newHttpClient();
 
     public GitHubAPIService(String token) {
         this.token = token;
@@ -53,26 +57,22 @@ public class GitHubAPIService {
         }).reduce(allRepos, JSONArray::putAll);
     }
 
-    public JSONArray getPullRequestsPage(String reposFullName, Integer perPage, Integer page) throws UnirestException {
-        HttpResponse<String> response = Unirest.get(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT + "?per_page=" + perPage + "&page=" + page)
-                .header("Authorization", "token " + token)
-                .asString();
+    public JSONArray getPullRequestsPage(String reposFullName, Integer perPage, Integer page) throws Exception {
+        HttpResponse<String> response = doApiGetRequest(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT + "?per_page=" + perPage + "&page=" + page);
 
-        return new JSONArray(response.getBody());
+        return new JSONArray(response.body());
     }
 
     public Integer getPullRequestsCount(String reposFullName) throws Exception {
-        HttpResponse<String> response = Unirest.get(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT + "?per_page=1")
-                .header("Authorization", "token " + token)
-                .asString();
+        HttpResponse<String> response = doApiGetRequest(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT + "?per_page=1");
 
-        if (response.getStatus() != HttpStatus.SC_OK) {
+        if (response.statusCode() != HttpURLConnection.HTTP_OK) {
             throw illegalStateExceptionSupplier.get();
         }
 
-        Headers responseHeaders = response.getHeaders();
+        HttpHeaders responseHeaders = response.headers();
 
-        String links = responseHeaders.get("Link").get(0);
+        String links = responseHeaders.map().get("Link").get(0);
         String lastLink = Arrays.stream(links.split(",")).filter(s -> s.contains("rel=\"last\"")).findFirst().orElseThrow(illegalStateExceptionSupplier);
         String lastPageUrl = lastLink.substring(lastLink.indexOf('<') + 1, lastLink.indexOf('>'));
 
@@ -93,20 +93,28 @@ public class GitHubAPIService {
      *
      * @param reposFullName String
      * @return {@link JSONArray} The result of the call if the HTTP Request was successful, or empty {@link JSONArray} otherwise
-     * @throws UnirestException In case of an HTTP Error
+     * @throws IOException          if an I/O error occurs when sending or receiving
+     * @throws InterruptedException – if the operation is interrupted
      */
-    public JSONArray getLatestPullRequestsForRepo(String reposFullName) throws UnirestException {
+    public JSONArray getLatestPullRequestsForRepo(String reposFullName) throws IOException, InterruptedException {
         logger.debug("Getting pull requests for repo " + reposFullName);
-        HttpResponse<String> prResponse = Unirest.get(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT)
-                .header("Authorization", "token " + token)
-                .asString();
 
-        if (prResponse.getStatus() != HttpStatus.SC_OK) {
+        var prResponse = doApiGetRequest(GITHUB_API_BASE_URL + REPOS_ENDPOINT + "/" + reposFullName + PULLS_ENDPOINT);
+
+        if (prResponse.statusCode() !=  HttpURLConnection.HTTP_OK) {
             logger.error("Error while getting pull requests for repo " + reposFullName);
-            logger.error("API returned non OK status : " + prResponse.getStatus());
+            logger.error("API returned non OK status : " + prResponse.statusCode());
             return null;
         }
 
-        return new JSONArray(prResponse.getBody());
+        return new JSONArray(prResponse.body());
+    }
+
+    private HttpResponse<String> doApiGetRequest(String uri) throws IOException, InterruptedException {
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .header("Authorization", "token " + token)
+                .build();
+        return client.send(request, BodyHandlers.ofString());
     }
 }
