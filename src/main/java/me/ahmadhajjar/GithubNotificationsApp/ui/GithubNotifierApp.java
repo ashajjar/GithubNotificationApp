@@ -5,14 +5,18 @@ import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.AddRepoButtonListe
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.HelpButtonListener;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.RemoveRepoButtonListener;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.WatchedReposListFocusListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GithubNotifierApp extends JFrame {
+    private static final Logger logger = LogManager.getLogger(GithubNotifierApp.class);
     public static final String CTRL_ENTER_ACTION_MAP_KEY = "ENTER";
     public static final String CTRL_D_ACTION_MAP_KEY = "CTRL_D";
     public static final String F1_ACTION_MAP_KEY = "F1";
@@ -56,7 +60,7 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void exitApplication(Window window) {
-        System.out.println("Exiting ...");
+        logger.debug("Exiting ...");
         saveWatchedRepos();
         window.dispose();
         System.exit(0);
@@ -68,7 +72,7 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void populateWatchedReposList() {
-        System.out.println("Loading saved repos into UI ...");
+        logger.debug("Loading saved repos into UI ...");
         DefaultListModel<String> model = new DefaultListModel<>();
 
         DiskStorageService.getInstance().loadReposList().forEach(model::addElement);
@@ -77,7 +81,7 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void initialiseWindow() {
-        System.out.println("Initialising UI ...");
+        logger.debug("Initialising UI ...");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("GitHub Repo Notifier");
         setContentPane(mainPanel);
@@ -94,7 +98,7 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void initializeKeyboardHandlers() {
-        System.out.println("Initialising keyboard handling ...");
+        logger.debug("Initialising keyboard handling ...");
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlenterKeyStroke, CTRL_ENTER_ACTION_MAP_KEY);
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlDKeyStroke, CTRL_D_ACTION_MAP_KEY);
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(f1KeyStroke, F1_ACTION_MAP_KEY);
@@ -102,28 +106,28 @@ public class GithubNotifierApp extends JFrame {
         getRootPane().getActionMap().put(CTRL_ENTER_ACTION_MAP_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Adding new repo to watch list ...");
+                logger.debug("Adding new repo to watch list ...");
                 addRepo.doClick();
             }
         });
         getRootPane().getActionMap().put(CTRL_D_ACTION_MAP_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Removing selected repo from watched list ...");
+                logger.debug("Removing selected repo from watched list ...");
                 removeRepoButton.doClick();
             }
         });
         getRootPane().getActionMap().put(F1_ACTION_MAP_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Calling for help ...");
+                logger.debug("Calling for help ...");
                 helpButton.doClick();
             }
         });
         getRootPane().getActionMap().put(CTRL_S_ACTION_MAP_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Saving watched repos to disk ...");
+                logger.debug("Saving watched repos to disk ...");
                 saveWatchedRepos();
             }
         });
@@ -136,6 +140,6 @@ public class GithubNotifierApp extends JFrame {
             result.add(model.getElementAt(i));
         }
         DiskStorageService.getInstance().saveReposList(result);
-        System.out.println("Saved repos!");
+        logger.debug("Saved repos!");
     }
 }

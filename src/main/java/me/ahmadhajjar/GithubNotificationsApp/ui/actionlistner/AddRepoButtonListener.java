@@ -1,5 +1,8 @@
 package me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +11,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class AddRepoButtonListener implements ActionListener {
+    private static final Logger logger = LogManager.getLogger(AddRepoButtonListener.class);
     private final JTextField newRepoName;
     private final JList<String> watchedReposList;
 
@@ -22,12 +26,12 @@ public class AddRepoButtonListener implements ActionListener {
         String newRepoNameValue = newRepoName.getText().trim();
 
         if (newRepoNameValue.isEmpty()) {
-            System.out.println("Repo name is empty!");
+            logger.debug("Repo name is empty!");
             return;
         }
 
         if (!newRepoNameValue.toLowerCase().matches("^[a-z\\d](?:[a-z\\d]|-(?=[a-z\\d])){0,38}/[a-z\\d](?:[a-z\\d]|-(?=[a-z\\d])){0,38}$")) {
-            System.out.println("Repo name is invalid!");
+            logger.debug("Repo name is invalid!");
             showValidationError(e);
             return;
         }
@@ -37,7 +41,7 @@ public class AddRepoButtonListener implements ActionListener {
         Stream<String> currentRepos = getCurrentReposAsStream(currentModel);
 
         if (currentRepos.anyMatch(s -> s.equalsIgnoreCase(newRepoNameValue))) {
-            System.out.println("Repo name exists!");
+            logger.debug("Repo name exists!");
             return;
         }
 
