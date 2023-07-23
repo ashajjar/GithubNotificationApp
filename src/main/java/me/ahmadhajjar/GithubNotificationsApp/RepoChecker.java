@@ -2,8 +2,10 @@ package me.ahmadhajjar.GithubNotificationsApp;
 
 import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
-import me.ahmadhajjar.GithubNotificationsApp.ui.TrayAdapter;
 import me.ahmadhajjar.GithubNotificationsApp.service.StorageService;
+import me.ahmadhajjar.GithubNotificationsApp.ui.TrayAdapter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RepoChecker extends Thread {
+    private static final Logger logger = LogManager.getLogger(RepoChecker.class);
     public static final long ONE_MINUTE = 60 * 1000;
     private static final long INITIAL_WAIT_TIME = 5000;
     private final GitHubAPIService gitHubAPIService;
@@ -34,7 +37,7 @@ public class RepoChecker extends Thread {
                 Thread.sleep(ONE_MINUTE);
             }
         } catch (Throwable e) {
-            System.out.println(e.getMessage());
+            logger.error(e);
         }
     }
 
@@ -80,11 +83,12 @@ public class RepoChecker extends Thread {
         private final List<Integer> lastPRNumbers;
         private final List<Integer> newPRNumbers;
 
-        public RepoNotificationThread(String repoName, List<Integer> lastPRNumbers, List<Integer> newPRNumbers){
+        public RepoNotificationThread(String repoName, List<Integer> lastPRNumbers, List<Integer> newPRNumbers) {
             this.repoName = repoName;
             this.lastPRNumbers = lastPRNumbers;
             this.newPRNumbers = newPRNumbers;
         }
+
         @Override
         public void run() {
             notifyAboutNewPullRequests();

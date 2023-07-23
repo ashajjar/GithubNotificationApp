@@ -1,11 +1,15 @@
 package me.ahmadhajjar.GithubNotificationsApp.ui;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 
 public class TrayAdapter {
+    private static final Logger logger = LogManager.getLogger(TrayAdapter.class);
     private final Boolean traySupported = SystemTray.isSupported();
     private TrayIcon trayIcon;
 
@@ -21,15 +25,14 @@ public class TrayAdapter {
         try {
             initialiseTray();
         } catch (AWTException e) {
-            System.err.println("Error while initialising notification service!");
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error("Error while initialising notification service!");
+            logger.error(e);
         }
     }
 
     private void initialiseTray() throws AWTException {
         if (!traySupported) {
-            System.err.println("System tray not supported!");
+            logger.error("System tray not supported!");
             return;
         }
 
@@ -50,7 +53,7 @@ public class TrayAdapter {
 
     public void sendNotification(String repoName, int newPRNumber) {
         if (!traySupported) {
-            System.err.println("System tray not supported!");
+            logger.error("System tray not supported!");
             return;
         }
         trayIcon.displayMessage("New Pull Request", "Repository " + repoName + " has a new open PR : #" + newPRNumber + "\n Click Here to open!", TrayIcon.MessageType.INFO);
@@ -60,7 +63,7 @@ public class TrayAdapter {
             try {
                 Desktop.getDesktop().browse(URI.create("https://github.com/" + repoName + "/pull/" + newPRNumber));
             } catch (IOException ex) {
-                System.err.println(ex.getMessage());
+                logger.error(ex);
             }
         };
         trayIcon.addActionListener(actionListener);
