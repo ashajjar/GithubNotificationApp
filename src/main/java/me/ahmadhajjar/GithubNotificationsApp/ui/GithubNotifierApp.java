@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -94,7 +95,19 @@ public class GithubNotifierApp extends JFrame {
 
     private void setWindowIcon() {
         ImageIcon appIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon.png")));
-        setIconImage(appIcon.getImage());
+
+        try {
+            logger.debug("Setting icon with reflection ...");
+            Class<?> taskbar = Class.forName("java.awt.Taskbar");
+            Method getTaskbar = taskbar.getDeclaredMethod("getTaskbar");
+            Object instance = getTaskbar.invoke(taskbar);
+            Method setIconImage = instance.getClass().getDeclaredMethod("setIconImage", Image.class);
+            setIconImage.invoke(instance, appIcon.getImage());
+        } catch (Throwable t) {
+            logger.warn("Setting icon with reflection failed! Falling back to tradition way...");
+            setIconImage(appIcon.getImage());
+        }
+
     }
 
     private void initializeKeyboardHandlers() {
