@@ -13,9 +13,11 @@ You get notifications whenever there is a new PR in one of the watched repos
 
 ## Keymap
 
-| Key                                | Action                                        |
-|------------------------------------|-----------------------------------------------|
-| <kbd>Ctrl</kbd> + <kbd>ENTER</kbd> | Insert new watched repo in the watch list     |
-| <kbd>Ctrl</kbd> + <kbd>D</kbd>     | Removes the selected repo from the watch list |
-| <kbd>Ctrl</kbd> + <kbd>S</kbd>     | Saves the repos watch list to disk            |
-| <kbd>F1</kbd>                      | Show help message                             |
+| Key                                                                    | Action                                        |
+|------------------------------------------------------------------------|-----------------------------------------------|
+| <kbd>Ctrl</kbd> + <kbd>ENTER</kbd> <br/> <kbd>ALT</kbd> + <kbd>A</kbd> | Insert new watched repo in the watch list     |
+| <kbd>Ctrl</kbd> + <kbd>D</kbd> <br/> <kbd>ALT</kbd> + <kbd>R</kbd>     | Removes the selected repo from the watch list |
+| <kbd>Ctrl</kbd> + <kbd>S</kbd>                                         | Saves the repos watch list to disk            |
+| <kbd>F1</kbd>  <br/> <kbd>ALT</kbd> + <kbd>H</kbd>                     | Show help message                             |
+| <kbd>ALT</kbd> + <kbd>N</kbd>                                          | Focus the repo name text box                  |
+| <kbd>ALT</kbd> + <kbd>W</kbd>                                          | Focus the repos list                          |
