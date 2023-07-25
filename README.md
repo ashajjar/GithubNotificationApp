@@ -21,3 +21,4 @@ You get notifications whenever there is a new PR in one of the watched repos
 | <kbd>F1</kbd>  <br/> <kbd>ALT</kbd> + <kbd>H</kbd>                     | Show help message                             |
 | <kbd>ALT</kbd> + <kbd>N</kbd>                                          | Focus the repo name text box                  |
 | <kbd>ALT</kbd> + <kbd>W</kbd>                                          | Focus the repos list                          |
+Test
