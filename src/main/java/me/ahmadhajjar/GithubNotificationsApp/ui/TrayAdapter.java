@@ -56,6 +56,7 @@ public class TrayAdapter {
             logger.error("System tray not supported!");
             return;
         }
+        logger.debug("Sending notification for :" + repoName + " #" + newPRNumber);
         trayIcon.displayMessage("New Pull Request", "Repository " + repoName + " has a new open PR : #" + newPRNumber + "\n Click Here to open!", TrayIcon.MessageType.INFO);
 
         trayIcon.removeActionListener(actionListener);

@@ -19,8 +19,8 @@ import java.util.Map;
 public class DiskStorageService implements StorageService {
     private static final Logger logger = LogManager.getLogger(DiskStorageService.class);
 
-    private static final String WATCHED_REPOS_FILE = "watched_repos.data.json";
-    private static final String WATCHED_REPOS_KNOWN_PRS_FILE = "watched_repos_known_prs.data.json";
+    private static final String WATCHED_REPOS_FILE = System.getProperty("user.home") + File.separator + "watched_repos.data.json";
+    private static final String WATCHED_REPOS_KNOWN_PRS_FILE = System.getProperty("user.home") + File.separator + "watched_repos_known_prs.data.json";
     private static final DiskStorageService instance = new DiskStorageService();
 
     private DiskStorageService() {

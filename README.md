@@ -3,6 +3,12 @@
 You need to add an environment variable `GITHUB_TOKEN` for the application to work, the token has to be valid of course
 for the app to work, and has to have access to the repos in the watch list.
 
+## Extra Step on Mac
+You need to do this after you define your `GITHUB_TOKEN` :
+```shell
+launchctl setenv GITHUB_TOKEN $GITHUB_TOKEN
+```
+
 You add the repos you would like to watch:
 
 ![image](https://github.com/ashajjar/GithubNotificationApp/assets/2855050/211a4611-ac80-45eb-a421-0ef25a09d020)
