@@ -4,8 +4,11 @@
 name: Maven Package
 
 on:
-  release:
-    types: [created]
+  # manual workflow run
+  workflow_dispatch:
+
+  push:
+    branches: ["master"]
 
 jobs:
   build:
