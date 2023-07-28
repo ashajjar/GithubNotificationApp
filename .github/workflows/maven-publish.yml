@@ -32,7 +32,7 @@ jobs:
     - name: Publish to GitHub Packages Apache Maven
       run: jpackage --name GithubNotifier --input ./target --main-jar GithubNotificationsApp-1.0-SNAPSHOT-jar-with-dependencies.jar --icon src/main/resources/icon.icns  --mac-package-name "Github Notifier"  --description "Notifies you about new PRs in the watched repos" --vendor "ash852006@gmail.com"  --copyright "Copyleft (L)"
       
-    - name: Install CoSing
+    - name: Install CoSign
       uses: sigstore/cosign-installer@main
       
     - name: Sign Release
