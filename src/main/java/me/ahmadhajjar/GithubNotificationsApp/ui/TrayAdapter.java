@@ -52,6 +52,10 @@ public class TrayAdapter {
     }
 
     public void sendNotification(String repoName, int newPRNumber) {
+        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            sendNative(repoName, newPRNumber);
+            return;
+        }
         if (!traySupported) {
             logger.error("System tray not supported!");
             return;
@@ -68,5 +72,12 @@ public class TrayAdapter {
             }
         };
         trayIcon.addActionListener(actionListener);
+    }
+
+    private void sendNative(String repoName, int newPRNumber) {
+        var notification = new Notification(repoName, newPRNumber);
+        notification.setVisible(true);
+        notification.toFront();
+        notification.repaint();
     }
 }
