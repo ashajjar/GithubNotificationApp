@@ -10,9 +10,9 @@ import java.net.URI;
 
 public class TrayAdapter {
     private static final Logger logger = LogManager.getLogger(TrayAdapter.class);
+    private final NotificationCenter notificationCenter = NotificationCenter.getInstance();
     private final Boolean traySupported = SystemTray.isSupported();
     private TrayIcon trayIcon;
-
     private ActionListener actionListener;
     private final PopupMenu popup = new PopupMenu();
     private static final TrayAdapter instance = new TrayAdapter();
@@ -53,7 +53,7 @@ public class TrayAdapter {
 
     public void sendNotification(String repoName, int newPRNumber) {
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-            sendNative(repoName, newPRNumber);
+            notificationCenter.addNotification(repoName, newPRNumber);
             return;
         }
         if (!traySupported) {
@@ -72,12 +72,5 @@ public class TrayAdapter {
             }
         };
         trayIcon.addActionListener(actionListener);
-    }
-
-    private void sendNative(String repoName, int newPRNumber) {
-        var notification = new Notification(repoName, newPRNumber);
-        notification.setVisible(true);
-        notification.toFront();
-        notification.repaint();
     }
 }
