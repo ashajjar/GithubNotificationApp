@@ -15,6 +15,7 @@ public class HelpButtonListener implements ActionListener {
                         CTRL+ENTER ---------- Add new repo
                         CTRL+S ----------------- Save the new repos list
                         CTRL+D ----------------- Delete selected repo
+                        CTRL+O ----------------- Shows currently open PRs
                         F1 ------------------------- Open this message""",
                 "Help",
                 JOptionPane.INFORMATION_MESSAGE

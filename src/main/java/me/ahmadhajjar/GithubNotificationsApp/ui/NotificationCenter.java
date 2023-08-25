@@ -1,5 +1,6 @@
 package me.ahmadhajjar.GithubNotificationsApp.ui;
 
+import me.ahmadhajjar.GithubNotificationsApp.utils.PROpener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -7,7 +8,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
-import java.io.IOException;
 import java.net.URI;
 
 public class NotificationCenter extends JFrame {
@@ -78,20 +78,12 @@ public class NotificationCenter extends JFrame {
 
     private void onOK(URI prURI) {
         logger.warn("Opening PR !!!!!");
-        goToPr(prURI);
+        PROpener.open(prURI);
         validate();
     }
 
     private void onCancel() {
         logger.warn("Closing notification !!!!!");
         validate();
-    }
-
-    private void goToPr(URI prURI) {
-        try {
-            Desktop.getDesktop().browse(prURI);
-        } catch (IOException ex) {
-            logger.error(ex);
-        }
     }
 }
