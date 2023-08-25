@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,9 +34,8 @@ public class Notification extends JPanel {
         btnOpen.addActionListener(onOpen);
         btnDismiss.addActionListener(onClose);
 
-        txtMessage.setBackground(UIManager.getColor("Label.background"));
-        txtMessage.setFont(UIManager.getFont("Label.font"));
-        txtMessage.setBorder(UIManager.getBorder("Label.border"));
+        txtMessage.setBackground(new Color(0,0,0,0));
+        txtMessage.setBorder(new LineBorder(new Color(0,0,0,0),0));
         txtMessage.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         txtMessage.setText("\nNew PR #" + newPRNumber + " in " + repoName);
 

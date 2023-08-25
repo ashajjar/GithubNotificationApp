@@ -127,6 +127,11 @@
             <artifactId>java-compiler-ant-tasks</artifactId>
             <version>${intellij.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.2</version>
+        </dependency>
     </dependencies>
 
 </project>
