@@ -29,7 +29,10 @@ public class MissedNotifications extends JFrame {
     private JScrollPane scroller;
     private JTree reposPRsTRee;
 
+    private final JFrame parent;
+
     public MissedNotifications(JFrame parent) {
+        this.parent = parent;
         setContentPane(mainPanel);
 
         setTitle("Missed Notifications");
@@ -135,6 +138,7 @@ public class MissedNotifications extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("Closing missed PRs...");
+                parent.setVisible(true);
                 dispose();
             }
         });
