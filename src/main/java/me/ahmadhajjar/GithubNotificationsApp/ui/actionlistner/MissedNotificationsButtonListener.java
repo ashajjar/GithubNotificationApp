@@ -16,6 +16,7 @@ public class MissedNotificationsButtonListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        missedNotifications.populateTree();
         missedNotifications.setVisible(true);
     }
 }

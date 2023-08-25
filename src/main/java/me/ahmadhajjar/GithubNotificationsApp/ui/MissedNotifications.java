@@ -15,11 +15,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URI;
+import java.util.Objects;
 
 public class MissedNotifications extends JFrame {
     private static final Logger logger = LogManager.getLogger(MissedNotifications.class);
     private static final String ESC_ACTION_MAP_KEY = "ESC";
     private static final String ENTER_ACTION_MAP_KEY = "ENTER";
+    public static final String NO_PR_LABEL = "[none]";
     private final KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
     private final KeyStroke enterKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true);
 
@@ -85,7 +87,7 @@ public class MissedNotifications extends JFrame {
         });
     }
 
-    private void populateTree() {
+    public void populateTree() {
         var treeRoot = new DefaultMutableTreeNode("All Currently Open PRs");
         var reposPRs = DiskStorageService.getInstance().loadReposPRList();
         for (String repoName : reposPRs.keySet()) {
@@ -95,7 +97,9 @@ public class MissedNotifications extends JFrame {
                 var child = new DefaultMutableTreeNode(prNumber);
                 repoTreeNode.add(child);
             }
-
+            if (repoTreeNode.getChildCount() == 0) {
+                repoTreeNode.add(new DefaultMutableTreeNode(NO_PR_LABEL));
+            }
             treeRoot.add(repoTreeNode);
 
         }
@@ -113,6 +117,10 @@ public class MissedNotifications extends JFrame {
         }
 
         var prNumber = selectionPath.getLastPathComponent().toString();
+
+        if (Objects.equals(prNumber, NO_PR_LABEL)) {
+            return;
+        }
         var repoName = selectionPath.getPathComponent(1);
 
         final URI prURI = URI.create("https://github.com/" + repoName + "/pull/" + prNumber);
