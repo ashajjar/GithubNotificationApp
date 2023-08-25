@@ -37,7 +37,7 @@ public class Notification extends JPanel {
         txtMessage.setBackground(new Color(0,0,0,0));
         txtMessage.setBorder(new LineBorder(new Color(0,0,0,0),0));
         txtMessage.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        txtMessage.setText("\nNew PR #" + newPRNumber + " in " + repoName);
+        txtMessage.setText("New PR #" + newPRNumber + " in " + repoName);
 
         BufferedImage myPicture = null;
         try {
