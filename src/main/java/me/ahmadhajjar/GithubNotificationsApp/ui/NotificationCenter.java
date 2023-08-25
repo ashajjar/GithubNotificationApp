@@ -40,7 +40,6 @@ public class NotificationCenter extends JFrame {
         setLocationToTopRight();
 
         hidingTimer = new Timer(HIDING_DELAY, e -> {
-            logger.info("Hiding notification center ...");
             hidingTimer.stop();
             getContentPane().removeAll();
             setVisible(false);
@@ -60,9 +59,9 @@ public class NotificationCenter extends JFrame {
     }
 
     public void showNotification(String repoName, int newPRNumber) {
+        logger.debug("notifying about PR#{} in {}", newPRNumber, repoName);
         final URI prURI = URI.create("https://github.com/" + repoName + "/pull/" + newPRNumber);
         var notification = new Notification(repoName, newPRNumber, e -> onOK(prURI), e -> onCancel());
-        logger.info("Adding notification ...");
 
         if (getContentPane().getComponentCount() > 4) {
             getContentPane().remove(getContentPane().getComponentCount() - 1);
@@ -73,17 +72,14 @@ public class NotificationCenter extends JFrame {
 
         hidingTimer.restart();
         setVisible(true);
-        logger.info("Showing notification ...");
     }
 
     private void onOK(URI prURI) {
-        logger.warn("Opening PR !!!!!");
         PROpener.open(prURI);
         validate();
     }
 
     private void onCancel() {
-        logger.warn("Closing notification !!!!!");
         validate();
     }
 }
