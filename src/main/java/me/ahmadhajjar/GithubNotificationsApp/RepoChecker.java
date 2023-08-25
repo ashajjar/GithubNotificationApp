@@ -3,6 +3,7 @@ package me.ahmadhajjar.GithubNotificationsApp;
 import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
 import me.ahmadhajjar.GithubNotificationsApp.service.StorageService;
+import me.ahmadhajjar.GithubNotificationsApp.ui.NotificationCenter;
 import me.ahmadhajjar.GithubNotificationsApp.ui.TrayAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -97,7 +98,7 @@ public class RepoChecker extends Thread {
         private void notifyAboutNewPullRequests() {
             for (Integer newPRNumber : newPRNumbers) {
                 if (!lastPRNumbers.contains(newPRNumber)) {
-                    TrayAdapter.getInstance().sendNotification(repoName, newPRNumber);
+                    NotificationCenter.getInstance().showNotification(repoName, newPRNumber);
                 }
             }
         }

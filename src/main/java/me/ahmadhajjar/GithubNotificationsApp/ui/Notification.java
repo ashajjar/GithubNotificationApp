@@ -6,15 +6,15 @@ import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Objects;
 
-public class Notification extends JFrame {
+public class Notification extends JPanel {
     private static final Logger logger = LogManager.getLogger(Notification.class);
     private JButton btnOpen;
     private JButton btnDismiss;
@@ -24,34 +24,20 @@ public class Notification extends JFrame {
     private JPanel panelTexts;
     private JTextArea txtMessage;
 
-    public Notification(String repoName, int newPRNumber) {
-        setContentPane(mainPanel);
-        setUndecorated(true);
-        setAlwaysOnTop(true);
-        setResizable(false);
-        setShape(new RoundRectangle2D.Double(0, 0, 350, 75, 20, 20));
+    public Notification(String repoName, int newPRNumber, ActionListener onOpen, ActionListener onClose) {
+        add(mainPanel);
         setSize(350, 75);
         panelActions.setMaximumSize(new Dimension(75, 75));
         panelTexts.setMaximumSize(new Dimension(200, 75));
 
-        btnOpen.addActionListener(e -> onOK());
-        btnDismiss.addActionListener(e -> onCancel());
-
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        btnOpen.addActionListener(onOpen);
+        btnDismiss.addActionListener(onClose);
 
         txtMessage.setBackground(UIManager.getColor("Label.background"));
         txtMessage.setFont(UIManager.getFont("Label.font"));
         txtMessage.setBorder(UIManager.getBorder("Label.border"));
         txtMessage.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         txtMessage.setText("\nNew PR #" + newPRNumber + " in " + repoName);
-
-        new Timer(5000, e -> dispose()).start();
-        logger.error("Window is {} x {}", this.getWidth(), this.getHeight());
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = ((int) screenSize.getWidth());
-
-        setLocation(width - getWidth() - 10, 30);
 
         BufferedImage myPicture = null;
         try {
@@ -66,10 +52,13 @@ public class Notification extends JFrame {
             lblIcon.setIcon(icon);
         }
 
+        setVisible(true);
+        setOpaque(false);
+
         this.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                goToPr(repoName, newPRNumber);
+                onOpen.actionPerformed(new ActionEvent(e, 1, ""));
             }
 
             @Override
@@ -94,21 +83,19 @@ public class Notification extends JFrame {
         });
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
-    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Dimension arcs = new Dimension(20, 20); //Border corners arcs {width,height}, change this to whatever you want
+        int width = getWidth();
+        int height = getHeight();
+        Graphics2D graphics = (Graphics2D) g;
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
-    }
-
-    private void goToPr(String repoName, int newPRNumber) {
-        try {
-            Desktop.getDesktop().browse(URI.create("https://github.com/" + repoName + "/pull/" + newPRNumber));
-        } catch (IOException ex) {
-            logger.error(ex);
-        }
+        //Draws the rounded panel with borders.
+        graphics.setColor(getBackground());
+        graphics.fillRoundRect(0, 0, width - 1, height - 1, arcs.width, arcs.height);//paint background
+        graphics.setColor(getForeground());
+        graphics.drawRoundRect(0, 0, width - 1, height - 1, arcs.width, arcs.height);//paint border
     }
 }
