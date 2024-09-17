@@ -1,5 +1,6 @@
 package me.ahmadhajjar.GithubNotificationsApp.ui;
 
+import me.ahmadhajjar.GithubNotificationsApp.PR;
 import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.utils.PROpener;
 import org.apache.logging.log4j.LogManager;
@@ -96,8 +97,8 @@ public class MissedNotifications extends JFrame {
         for (String repoName : reposPRs.keySet()) {
             var repoTreeNode = new DefaultMutableTreeNode(repoName);
 
-            for (Integer prNumber : reposPRs.get(repoName)) {
-                var child = new DefaultMutableTreeNode(prNumber);
+            for (PR pr : reposPRs.get(repoName)) {
+                var child = new DefaultMutableTreeNode(pr);
                 repoTreeNode.add(child);
             }
             if (repoTreeNode.getChildCount() == 0) {
@@ -124,6 +125,11 @@ public class MissedNotifications extends JFrame {
         if (Objects.equals(prNumber, NO_PR_LABEL)) {
             return;
         }
+
+        DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+        PR pr = (PR) lastPathComponent.getUserObject();
+        prNumber = pr.getPrId().toString();
+
         var repoName = selectionPath.getPathComponent(1);
 
         final URI prURI = URI.create("https://github.com/" + repoName + "/pull/" + prNumber);
