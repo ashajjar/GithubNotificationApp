@@ -4,7 +4,6 @@ import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.service.GitHubAPIService;
 import me.ahmadhajjar.GithubNotificationsApp.service.StorageService;
 import me.ahmadhajjar.GithubNotificationsApp.ui.NotificationCenter;
-import me.ahmadhajjar.GithubNotificationsApp.ui.TrayAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -20,7 +19,7 @@ public class RepoChecker extends Thread {
     private static final long INITIAL_WAIT_TIME = 5000;
     private final GitHubAPIService gitHubAPIService;
     private final StorageService storageService;
-    Map<String, List<Integer>> reposPRMap;
+    Map<String, List<PR>> reposPRMap;
 
     public RepoChecker(GitHubAPIService gitHubAPIService) {
         this.gitHubAPIService = gitHubAPIService;
@@ -29,16 +28,22 @@ public class RepoChecker extends Thread {
 
     @Override
     public void run() {
+        // todo Put the try-catch inside the loop. And implement incremental waiting strategy.
         try {
             Thread.sleep(INITIAL_WAIT_TIME);
-            //noinspection InfiniteLoopStatement
-            while (true) {
+        } catch (InterruptedException e) {
+            logger.error(e);
+        }
+        //noinspection InfiniteLoopStatement
+        while (true) {
+            try {
                 checkReposForOpenPullRequests();
                 //noinspection BusyWait
                 Thread.sleep(ONE_MINUTE);
+
+            } catch (Throwable e) {
+                logger.error(e);
             }
-        } catch (Throwable e) {
-            logger.error(e);
         }
     }
 
@@ -55,8 +60,8 @@ public class RepoChecker extends Thread {
 
             boolean newRepo = !reposPRMap.containsKey(repoName);
 
-            List<Integer> lastPRNumbers = reposPRMap.get(repoName);
-            List<Integer> newPRNumbers = createPullRequestsNumbersList(pullRequests);
+            List<PR> lastPRNumbers = reposPRMap.get(repoName);
+            List<PR> newPRNumbers = createPullRequestsNumbersList(pullRequests);
 
             reposPRMap.put(repoName, newPRNumbers);
 
@@ -68,12 +73,13 @@ public class RepoChecker extends Thread {
         storageService.saveReposPRList(reposPRMap);
     }
 
-    private static List<Integer> createPullRequestsNumbersList(JSONArray pullRequests) {
-        List<Integer> prNumbers = new ArrayList<>();
+    private static List<PR> createPullRequestsNumbersList(JSONArray pullRequests) {
+        List<PR> prNumbers = new ArrayList<>();
         for (int j = 0; j < pullRequests.length(); j++) {
             JSONObject pr = pullRequests.getJSONObject(j);
             int prNumber = pr.getInt("number");
-            prNumbers.add(prNumber);
+            String username = pr.getJSONObject("user").getString("login");
+            prNumbers.add(new PR(username, prNumber));
         }
         return prNumbers;
     }
@@ -81,10 +87,10 @@ public class RepoChecker extends Thread {
     private static class RepoNotificationThread extends Thread {
 
         private final String repoName;
-        private final List<Integer> lastPRNumbers;
-        private final List<Integer> newPRNumbers;
+        private final List<PR> lastPRNumbers;
+        private final List<PR> newPRNumbers;
 
-        public RepoNotificationThread(String repoName, List<Integer> lastPRNumbers, List<Integer> newPRNumbers) {
+        public RepoNotificationThread(String repoName, List<PR> lastPRNumbers, List<PR> newPRNumbers) {
             this.repoName = repoName;
             this.lastPRNumbers = lastPRNumbers;
             this.newPRNumbers = newPRNumbers;
@@ -96,9 +102,9 @@ public class RepoChecker extends Thread {
         }
 
         private void notifyAboutNewPullRequests() {
-            for (Integer newPRNumber : newPRNumbers) {
+            for (PR newPRNumber : newPRNumbers) {
                 if (!lastPRNumbers.contains(newPRNumber)) {
-                    NotificationCenter.getInstance().showNotification(repoName, newPRNumber);
+                    NotificationCenter.getInstance().showNotification(repoName, newPRNumber.getPrId());
                 }
             }
         }

@@ -1,5 +1,6 @@
 package me.ahmadhajjar.GithubNotificationsApp.service;
 
+import me.ahmadhajjar.GithubNotificationsApp.PR;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -61,9 +62,9 @@ public class DiskStorageService implements StorageService {
     }
 
     @Override
-    public Map<String, List<Integer>> loadReposPRList() {
+    public Map<String, List<PR>> loadReposPRList() {
         logger.debug("Loading Pull Requests from disk ...");
-        Map<String, List<Integer>> result = new HashMap<>();
+        Map<String, List<PR>> result = new HashMap<>();
         File file = new File(WATCHED_REPOS_KNOWN_PRS_FILE);
         if (file.exists()) {
             try {
@@ -74,10 +75,11 @@ public class DiskStorageService implements StorageService {
 
                 for (String key : map.keySet()) {
                     List<?> intObjects = (List<?>) map.get(key);
-                    List<Integer> ints = new ArrayList<>();
+                    List<PR> ints = new ArrayList<>();
 
                     for (Object object : intObjects) {
-                        ints.add(Integer.parseInt(object.toString()));
+                        Map<String, Object> prMap = (Map<String, Object>) object;
+                        ints.add(new PR(prMap.get("username").toString(), (Integer) prMap.get("prId")));
                     }
                     result.put(key, ints);
                 }
@@ -90,7 +92,7 @@ public class DiskStorageService implements StorageService {
     }
 
     @Override
-    public void saveReposPRList(Map<String, List<Integer>> reposPrs) {
+    public void saveReposPRList(Map<String, List<PR>> reposPrs) {
         logger.debug("Saving the pull requests to disk ...");
         try (FileWriter writer = new FileWriter(WATCHED_REPOS_KNOWN_PRS_FILE)) {
             writer.write(JSONWriter.valueToString(reposPrs));

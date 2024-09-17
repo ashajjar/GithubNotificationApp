@@ -1,5 +1,6 @@
 package me.ahmadhajjar.GithubNotificationsApp.ui;
 
+import me.ahmadhajjar.GithubNotificationsApp.RepoChecker;
 import me.ahmadhajjar.GithubNotificationsApp.service.DiskStorageService;
 import me.ahmadhajjar.GithubNotificationsApp.ui.actionlistner.*;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +36,10 @@ public class GithubNotifierApp extends JFrame {
     private JButton helpButton;
     private JButton missedNotificationsButton;
 
-    public GithubNotifierApp() {
+    private RepoChecker checker;
+
+    public GithubNotifierApp(RepoChecker checker) {
+        this.checker = checker;
         initialiseWindow();
 
         addRepo.addActionListener(new AddRepoButtonListener(newRepoName, watchedReposList));
@@ -57,7 +61,13 @@ public class GithubNotifierApp extends JFrame {
     }
 
     private void initialiseTrayPopupMenu() {
-        TrayAdapter.getInstance().addPopupMenuItem("Reload", e -> logger.warn("Tray reload is not implemented yet"));
+        TrayAdapter.getInstance().addPopupMenuItem("Reload", e -> {
+            try {
+                this.checker.checkReposForOpenPullRequests();
+            } catch (Exception ex) {
+                logger.error("Failed to reload!");
+            }
+        });
         TrayAdapter.getInstance().addPopupMenuItem("Exit", e -> exitApplication(this));
     }
 
